@@ -17,22 +17,62 @@ it says so instead of guessing.
   keep only what earns its place. I built and tested retrieval first — if it finds the
   wrong pages, no amount of clever prompting fixes the answer.
 
-## Quickstart
+## How to run
 
-The chunked and prepared data is already in the repo (`data/*.jsonl`), so you don't
-need to re-scrape anything or spend any Gemini quota to run it.
+You need **Python 3.9 or newer** installed. The prepared data is already in the repo,
+so you don't need to re-scrape anything or spend any Gemini quota to get it running.
+Follow these steps in order.
+
+**1. Download the project** and open its folder:
+
+```bash
+git clone https://github.com/drazzaq60-create/Hack-on-Tech---Rag-Task-.git
+cd Hack-on-Tech---Rag-Task-
+```
+
+**2. Create and activate a virtual environment** (keeps the install clean):
 
 ```bash
 python -m venv venv
-venv\Scripts\activate                 # Windows  (source venv/bin/activate on macOS/Linux)
-pip install -r requirements.txt
-
-copy .env.example .env                 # then edit .env and paste your free Gemini key
-                                       # (https://aistudio.google.com/app/apikey)
-
-python src/index.py --contextual       # build the search index (no API calls)
-uvicorn src.app:app                     # run it -> http://127.0.0.1:8000
+venv\Scripts\activate          # Windows
+# source venv/bin/activate     # macOS / Linux
 ```
+
+**3. Install the dependencies:**
+
+```bash
+pip install -r requirements.txt
+```
+
+**4. Add your Gemini API key.** It's free — get one at
+https://aistudio.google.com/app/apikey. Then copy the example file and paste your key
+into it:
+
+```bash
+copy .env.example .env         # Windows   (use: cp .env.example .env on macOS/Linux)
+```
+
+Open the new `.env` file and set your key, so the line reads:
+
+```
+GEMINI_API_KEY=your_key_here
+```
+
+**5. Build the search index** (reads the data already in the repo, makes no API calls):
+
+```bash
+python src/index.py --contextual
+```
+
+**6. Start the service:**
+
+```bash
+uvicorn src.app:app
+```
+
+Now open **http://127.0.0.1:8000** in your browser and ask a question (for example,
+"How do I define a class in Python?"). You can also send a question directly to the API
+with `curl` — see the [API](#api) section below.
 
 ## How it works
 
