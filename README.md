@@ -74,6 +74,11 @@ Now open **http://127.0.0.1:8000** in your browser and ask a question (for examp
 "How do I define a class in Python?"). You can also send a question directly to the API
 with `curl` — see the [API](#api) section below.
 
+> **Note on the first run:** steps 5 and 6 download two small models the first time
+> (~250 MB total, embedder + reranker) and cache them, so the first start takes a minute
+> or two; later starts are fast. Installing `requirements.txt` also pulls PyTorch, so the
+> install itself is a few hundred MB. Everything runs locally on CPU, no GPU needed.
+
 ## How it works
 
 ```
