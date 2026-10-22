@@ -111,6 +111,24 @@ closest chunks, then a reranker (`ms-marco-MiniLM-L-6-v2`) reads each candidate
 *together with the question* and re-sorts them properly. I chose small, free, local
 models on purpose: a strong design with light parts, and no API bill.
 
+## The service
+
+**Generation (`src/answer.py`).** Three rules make this a real RAG service, not just
+"ask the model and hope": **grounding** (answer only from the retrieved chunks),
+**refusal** (say so when the answer isn't there), and **citations** (inline `[n]` that
+link the exact sections). Citations are precise: chunks are grouped by section, so each
+number is a different source, and only the sections the answer actually used are shown.
+
+**Model failover (`src/llm.py`).** Each Gemini call tries models in order and moves to
+the next one if a model's free quota runs out (each model has its own daily limit). I
+reused this idea from my own project, Illomra — it's simpler here because each call
+stands alone, with no chat history to carry over.
+
+**Hardening (`src/app.py`).** The service checks input (rejects empty or very long
+questions), limits requests per client, and handles a used-up quota gracefully (a clear
+"busy, try again" instead of a crash). Answers are sanitized before display and source
+fields are escaped.
+
 ## Evaluation and experiments
 
 I wrote 20 questions by hand and, for each, noted the section that should answer it
@@ -220,24 +238,6 @@ Knowing which technique fits the problem mattered more than using every one I co
    cover can be answered instead of refused.
 5. **Stream answers and add a feedback button** to collect real labels and grow the test
    set beyond the hand-written 20.
-
-## The service
-
-**Generation (`src/answer.py`).** Three rules make this a real RAG service, not just
-"ask the model and hope": **grounding** (answer only from the retrieved chunks),
-**refusal** (say so when the answer isn't there), and **citations** (inline `[n]` that
-link the exact sections). Citations are precise: chunks are grouped by section, so each
-number is a different source, and only the sections the answer actually used are shown.
-
-**Model failover (`src/llm.py`).** Each Gemini call tries models in order and moves to
-the next one if a model's free quota runs out (each model has its own daily limit). I
-reused this idea from my own project, Illomra — it's simpler here because each call
-stands alone, with no chat history to carry over.
-
-**Hardening (`src/app.py`).** The service checks input (rejects empty or very long
-questions), limits requests per client, and handles a used-up quota gracefully (a clear
-"busy, try again" instead of a crash). Answers are sanitized before display and source
-fields are escaped.
 
 ## API
 
