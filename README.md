@@ -1,3 +1,13 @@
+---
+title: Python Tutorial RAG
+emoji: 🐍
+colorFrom: indigo
+colorTo: blue
+sdk: docker
+app_port: 7860
+pinned: false
+---
+
 # Python Tutorial RAG
 
 A question-answering service for Python, built on top of the official
