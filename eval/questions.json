@@ -1,0 +1,22 @@
+[
+  {"question": "How do I write a for loop in Python?", "correct": "for Statements"},
+  {"question": "How does the range function generate a sequence of numbers?", "correct": "range()"},
+  {"question": "How can I stop a loop early or skip to the next iteration?", "correct": "break and continue"},
+  {"question": "How do I define my own function?", "correct": "Defining Functions"},
+  {"question": "How do I give a function default values for its arguments?", "correct": "Default Argument Values"},
+  {"question": "How do I pass arguments to a function by name?", "correct": "Keyword Arguments"},
+  {"question": "How can a function accept any number of arguments?", "correct": "Arbitrary Argument Lists"},
+  {"question": "What is a lambda or anonymous function?", "correct": "Lambda Expressions"},
+  {"question": "What is a list comprehension and how do I use it?", "correct": "List Comprehensions"},
+  {"question": "How do I create and use a dictionary?", "correct": "Dictionaries"},
+  {"question": "How do I create a set and what is it used for?", "correct": "Sets"},
+  {"question": "How do I loop over items while keeping their index?", "correct": "Looping Techniques"},
+  {"question": "How do I catch and handle exceptions?", "correct": "Handling Exceptions"},
+  {"question": "How do I raise an exception myself?", "correct": "Raising Exceptions"},
+  {"question": "How do I define a class in Python?", "correct": "Class Definition Syntax"},
+  {"question": "How does inheritance work between classes?", "correct": "Inheritance"},
+  {"question": "How do I import and use a module?", "correct": "More on Modules"},
+  {"question": "How do I read from and write to a file?", "correct": "Reading and Writing Files"},
+  {"question": "How do I format output using f-strings?", "correct": "Formatted String Literals"},
+  {"question": "How do I create a virtual environment?", "correct": "Creating Virtual Environments"}
+]

@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Python Tutorial RAG</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+<style>
+  :root{
+    --bg:#0f1220; --panel:#171a2b; --panel2:#1e2235; --line:#2a2f48;
+    --text:#e9ecf5; --muted:#9aa3bd; --brand:#6c8cff; --brand2:#8a6cff;
+    --ok:#39d98a; --warn:#ffb020; --chip:#232842;
+    --radius:14px; --shadow:0 10px 30px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; font-family:Inter,system-ui,sans-serif; background:var(--bg);
+    color:var(--text); line-height:1.55;
+  }
+  .wrap{max-width:860px; margin:0 auto; padding:0 18px 80px}
+
+  /* header */
+  header{
+    background:radial-gradient(1200px 300px at 20% -20%, rgba(108,140,255,.25), transparent),
+               radial-gradient(1000px 300px at 90% -30%, rgba(138,108,255,.22), transparent);
+    border-bottom:1px solid var(--line); padding:38px 0 30px; margin-bottom:26px;
+  }
+  .badge{
+    display:inline-flex; align-items:center; gap:8px; font-size:.78rem; font-weight:600;
+    letter-spacing:.3px; color:#cdd6ff; background:rgba(108,140,255,.14);
+    border:1px solid rgba(108,140,255,.35); padding:6px 12px; border-radius:999px;
+  }
+  .badge .dot{width:7px;height:7px;border-radius:50%;background:var(--brand)}
+  h1{margin:16px 0 6px; font-size:2rem; font-weight:700; letter-spacing:-.02em}
+  h1 .accent{background:linear-gradient(90deg,var(--brand),var(--brand2));
+             -webkit-background-clip:text; background-clip:text; color:transparent}
+  .sub{color:var(--muted); font-size:1.02rem; max-width:620px}
+
+  /* benchmark strip */
+  .stats{display:flex; gap:12px; flex-wrap:wrap; margin-top:20px}
+  .stat{background:var(--panel); border:1px solid var(--line); border-radius:12px;
+        padding:12px 16px; min-width:118px}
+  .stat .k{font-size:1.35rem; font-weight:700}
+  .stat .l{font-size:.74rem; color:var(--muted); text-transform:uppercase; letter-spacing:.6px}
+  .stat.good .k{color:var(--ok)}
+
+  /* task panel */
+  details.task{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+               padding:4px 18px; margin-bottom:22px}
+  details.task summary{cursor:pointer; padding:14px 0; font-weight:600; list-style:none;
+               display:flex; align-items:center; justify-content:space-between}
+  details.task summary::-webkit-details-marker{display:none}
+  details.task summary .caret{color:var(--muted); transition:transform .2s}
+  details.task[open] summary .caret{transform:rotate(90deg)}
+  .task .body{color:var(--muted); padding:2px 0 16px; font-size:.95rem}
+  .task .body b{color:var(--text)}
+  .task ul{margin:10px 0 0; padding-left:18px}
+  .task li{margin:4px 0}
+
+  /* ask box */
+  .ask{display:flex; gap:10px; margin-bottom:12px}
+  #q{flex:1; background:var(--panel); border:1px solid var(--line); color:var(--text);
+     padding:15px 16px; border-radius:12px; font-size:1rem; outline:none}
+  #q:focus{border-color:var(--brand); box-shadow:0 0 0 3px rgba(108,140,255,.18)}
+  #btn{border:0; border-radius:12px; padding:0 22px; font-size:1rem; font-weight:600;
+       color:#fff; cursor:pointer; background:linear-gradient(90deg,var(--brand),var(--brand2))}
+  #btn:disabled{opacity:.55; cursor:default}
+  .examples{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:26px}
+  .ex{font-size:.84rem; color:var(--muted); background:var(--chip); border:1px solid var(--line);
+      padding:7px 12px; border-radius:999px; cursor:pointer}
+  .ex:hover{color:var(--text); border-color:var(--brand)}
+
+  /* result */
+  #result{display:none}
+  .meta{display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin-bottom:12px}
+  .pill{font-size:.78rem; color:var(--muted); background:var(--chip); border:1px solid var(--line);
+        padding:5px 11px; border-radius:999px}
+
+  .card{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+        padding:22px 24px; box-shadow:var(--shadow)}
+  .answer{font-size:1rem}
+  .answer p{margin:0 0 12px}
+  .answer ul,.answer ol{margin:0 0 12px; padding-left:22px}
+  .answer li{margin:5px 0}
+  .answer code{background:var(--panel2); padding:2px 6px; border-radius:6px; font-size:.9em}
+  .answer pre{background:#0c0f1a!important; border:1px solid var(--line); border-radius:12px;
+              padding:14px 16px; overflow-x:auto; margin:0 0 14px}
+  .answer pre code{background:transparent; padding:0}
+  .answer a{color:var(--brand)}
+  .answer.refused{color:var(--warn); font-weight:500}
+
+  /* sources */
+  .sources{margin-top:18px; border-top:1px solid var(--line); padding-top:16px}
+  .sources h3{margin:0 0 12px; font-size:.82rem; text-transform:uppercase; letter-spacing:.7px; color:var(--muted)}
+  .src{display:flex; align-items:center; gap:12px; padding:10px 12px; border:1px solid var(--line);
+       border-radius:10px; margin-bottom:8px; background:var(--panel2); text-decoration:none; color:inherit}
+  .src:hover{border-color:var(--brand)}
+  .src .n{flex:none; width:26px; height:26px; border-radius:7px; background:rgba(108,140,255,.16);
+          color:#cdd6ff; font-weight:700; font-size:.8rem; display:grid; place-items:center}
+  .src .t{flex:1; font-size:.92rem; font-weight:500}
+  .src .u{font-size:.74rem; color:var(--muted); word-break:break-all}
+
+  .loader{display:flex; align-items:center; gap:10px; color:var(--muted)}
+  .spin{width:16px;height:16px;border:2px solid var(--line);border-top-color:var(--brand);
+        border-radius:50%; animation:spin .8s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  footer{margin-top:34px; color:var(--muted); font-size:.82rem; text-align:center; line-height:1.7}
+  footer code{background:var(--chip); padding:1px 6px; border-radius:5px}
+
+  @media (max-width:560px){ h1{font-size:1.6rem} .ask{flex-direction:column} #btn{padding:13px} }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <span class="badge"><span class="dot"></span>Hack On Tech &middot; AI Engineering Internship Task</span>
+    <h1>Python Tutorial <span class="accent">RAG</span></h1>
+    <p class="sub">Ask anything about the official Python 3 Tutorial. Answers are generated
+      only from the docs, with pinpoint citations. If it isn't in the tutorial, it says so
+      instead of guessing.</p>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="ask">
+    <input id="q" placeholder="Ask anything about the Python 3 Tutorial…" autocomplete="off"
+           onkeydown="if(event.key==='Enter')go()">
+    <button id="btn" onclick="go()">Ask</button>
+  </div>
+
+  <div id="result">
+    <div class="meta" id="meta"></div>
+    <div class="card">
+      <div class="answer" id="answer"></div>
+      <div class="sources" id="sources"></div>
+    </div>
+  </div>
+
+  <footer>
+    Retrieval: Contextual Retrieval &rarr; vector search &rarr; cross-encoder reranker &middot;
+    Generation: Gemini, grounded with citations &middot; <span id="modelchain"></span><br>
+    Served by FastAPI &middot; <code>POST /ask</code>
+  </footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.0/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.9/purify.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>
+function pct(x){ return Math.round((x||0)*100); }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,
+  c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+async function loadMeta(){
+  try{
+    const m = await (await fetch('/meta')).json();
+    document.getElementById('modelchain').textContent =
+      'Model failover: ' + (m.models||[]).join(' → ');
+  }catch(e){ /* optional chrome */ }
+}
+
+async function go(){
+  const q = document.getElementById('q').value.trim();
+  if(!q) return;
+  const btn = document.getElementById('btn');
+  const result = document.getElementById('result');
+  const meta = document.getElementById('meta');
+  const ans = document.getElementById('answer');
+  const src = document.getElementById('sources');
+
+  btn.disabled = true;
+  result.style.display = 'block';
+  meta.innerHTML = '';
+  src.innerHTML = '';
+  ans.className = 'answer';
+  ans.innerHTML = '<div class="loader"><span class="spin"></span>Searching the docs and composing a grounded answer…</div>';
+
+  try{
+    const res = await fetch('/ask',{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({question:q})
+    });
+    const data = await res.json();
+
+    // error responses (400/429/503) come back with a `detail` and no answer
+    if(!data.answer && data.detail){
+      ans.className = 'answer refused';
+      ans.textContent = data.detail;
+      return;
+    }
+
+    // answer (rendered markdown, sanitized)
+    if(data.refused){
+      ans.className = 'answer refused';
+      ans.textContent = data.answer;
+    }else{
+      ans.className = 'answer';
+      ans.innerHTML = DOMPurify.sanitize(marked.parse(data.answer||''));
+      ans.querySelectorAll('pre code').forEach(b=>{ try{hljs.highlightElement(b);}catch(e){} });
+    }
+
+    // meta row: which model answered
+    meta.innerHTML = data.model
+      ? `<span class="pill">model: ${esc(data.model)}</span>`
+      : '';
+
+    // sources (pinpoint, deduped, deep-linked)
+    if(data.sources && data.sources.length){
+      src.innerHTML = '<h3>Sources &middot; cited</h3>' + data.sources.map(s=>`
+        <a class="src" href="${esc(s.url)}" target="_blank" rel="noopener">
+          <span class="n">${s.n|0}</span>
+          <span class="t">${esc(s.section_title)}<div class="u">${esc(s.url)}</div></span>
+        </a>`).join('');
+    }
+  }catch(e){
+    ans.className = 'answer refused';
+    ans.textContent = 'Something went wrong: ' + e;
+  }finally{
+    btn.disabled = false;
+  }
+}
+
+loadMeta();
+</script>
+</body>
+</html>

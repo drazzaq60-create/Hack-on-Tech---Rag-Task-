@@ -1,0 +1,11 @@
+requests
+beautifulsoup4
+lxml
+sentence-transformers
+chromadb
+google-genai
+fastapi
+uvicorn[standard]
+python-dotenv
+numpy
+tqdm
