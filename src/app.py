@@ -1,7 +1,7 @@
 # The service: a small FastAPI app so you can actually ASK the thing questions.
 #
 # POST /ask   {"question": "..."}  -> grounded answer + pinpoint sources (or a refusal)
-# GET  /meta                        -> models + the offline benchmark, for the UI
+# GET  /meta                        -> the model failover chain, for the UI footer
 # GET  /health                      -> quick "is it up" check
 # GET  /                            -> the web UI (src/static/index.html)
 #
